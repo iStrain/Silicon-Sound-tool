@@ -12,6 +12,6 @@ Files are:
 + Sound.java (main file for the tool);
 + SoundStyles.css (JavaFX CSS stylesheet for the tool);
 + MiNiSYNTH.png (logo for the tool); and
-+ MiNiSYNTH.exe (Windows executable for the tool).
++ Sound.exe (Windows executable for the tool).
 
 The tool also uses the Tone.java, Envelope.java and Twain.java files from the Silicon repository.
