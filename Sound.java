@@ -25,6 +25,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -41,11 +42,8 @@ public class Sound extends Application {
     GridPane root;
     Envelope env;
     int duration;
-    Button btNew;
-    String[] names = { "Attack (ms)", "Attack (volume)", "Decay (ms)", "Decay (volume)", "Sustain (ms)",
-	    "Sustain (volume)", "Release (ms)", "Release (volume)" };
-    String[] labelText = { "ATTACK\n(ms)", "ATTACK\n(volume)", "DECAY\n(ms)", "DECAY\n(volume)", "SUSTAIN\n(ms)",
-	    "SUSTAIN\n(volume)", "RELEASE\n(ms)", "RELEASE\n(volume)" };
+    Button btPlay;
+    String[] names = { "Origin", "Attack", "Decay", "Sustain", "Release" };
     int[] durations = { 0, 50, 50, 50, 50 };
     int[] positions = { 0, 50, 100, 150, 200 };
     double[] levels = { 0.0, 1.0, 0.75, 0.5, 0 };
@@ -79,7 +77,7 @@ public class Sound extends Application {
 	// Add the Scene to the primary Stage and resize
 	stage.setScene(scene);
 	stage.show();
-	btNew.requestFocus();
+	btPlay.requestFocus();
     }
 
     /*
@@ -96,7 +94,7 @@ public class Sound extends Application {
 
 	// Create the "MiNiSYNTH" logo
 	// Load the logo into an ImageView and add it to the GridPane
-	ImageView iv = new ImageView();
+	ImageView iv = new ImageView(new Image(getClass().getResourceAsStream("MiNiSYNTH.png")));
 	iv.setPreserveRatio(true);
 	root.add(iv, 0, 0, 4, 1);
 
@@ -114,24 +112,24 @@ public class Sound extends Application {
 	vbNote.getChildren().add(lNote);
 	root.add(vbNote, 6, 0, 2, 1);
 
-	// Defining the x axis
+	// Define the x and y NumberAxis
 	NumberAxis xAxis = new NumberAxis();
 	xAxis.setLabel("MILLISECONDS");
-
-	// Defining the y axis
 	NumberAxis yAxis = new NumberAxis(0.0, 1.00, 0.25);
-	yAxis.setLabel("AMPLITUDE");
+	yAxis.setLabel("VOLUME");
 
-	// Prepare XYChart.Series objects by setting data
+	// Prepare XYChart.Series objects by setting data elements
 	XYChart.Series<Integer, Double> series = new XYChart.Series<>();
-	series.setName("ADSR ENVELOPE");
+	series.setName("ADSR PARAMETERS");
 	for (int i = 0; i < 5; i++) {
 	    series.getData().add(new Data<Integer, Double>(positions[i], levels[i]));
 	}
 
-	// Creating the line chart
+	// Create the Line Chart and add to the GridPane
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	LineChart<Integer, Double> linechart = new LineChart(xAxis, yAxis);
 	linechart.getData().add(series);
+	linechart.setTitle("ADSR ENVELOPE");
 	root.add(linechart, 0, 1, 4, 1);
 
 	// Create a TextArea to display the active Envelope settings
@@ -143,16 +141,14 @@ public class Sound extends Application {
 	Button btEnv = new Button("SET ENVELOPE");
 	btEnv.setTooltip(new Tooltip("Press this button to update the ADSR Envelope with the current settings"));
 	btEnv.setOnAction(ae -> {
-	    env = new Envelope(durations, levels);
 	    ta.setText(updateTable());
+	    env = new Envelope(durations, levels);
 	});
 
-	btNew = new Button("PLAY TONE");
-	btNew.setTooltip(new Tooltip("Press this button to play a Tone with the current settings"));
-	btNew.setOnMousePressed(me -> new Thread(new Tone(262, duration)).start());
-	btNew.setOnAction(ae -> {
-	    System.out.println("Play");
-	});
+	btPlay = new Button("PLAY TONE");
+	btPlay.setTooltip(new Tooltip("Press this button to play a Tone with the current settings"));
+	btPlay.setOnMousePressed(me -> new Thread(new Tone(262, duration)).start());
+	btPlay.setOnAction(ae -> System.out.println("Play"));
 
 	Button btExit = new Button("EXIT");
 	btExit.setTooltip(new Tooltip("Press this button when you've had enough"));
@@ -161,10 +157,10 @@ public class Sound extends Application {
 	// Create a VBox to hold the buttons
 	VBox vb = new VBox();
 	vb.setId("VBox-buttons");
-	vb.getChildren().addAll(btEnv, btNew, btExit);
+	vb.getChildren().addAll(btEnv, btPlay, btExit);
 	root.add(vb, 6, 1, 2, 1);
 
-	// Create the 8 x Labels (one for each Slider)
+	// Create the 8 x TextFields, Sliders and Labels
 	for (int i = 0; i < 8; i++) {
 	    final int index = 1 + i / 2;
 	    final boolean isDuration = (i % 2 == 0);
@@ -174,7 +170,7 @@ public class Sound extends Application {
 	    root.getColumnConstraints().add(cc);
 	    Slider s;
 	    TextField t;
-	    Label l = new Label(labelText[i]);
+	    Label l;
 
 	    // Set parameters for "duration" variables
 	    if (isDuration) {
@@ -182,6 +178,7 @@ public class Sound extends Application {
 		s.setMajorTickUnit(25.0f);
 		s.setBlockIncrement(10.0f);
 		t = new TextField(String.format("%.0f", s.getValue()));
+		l = new Label(names[index] + "\n(ms)");
 		s.valueProperty().addListener((ov, oldValue, newValue) -> {
 		    durations[index] = newValue.intValue();
 		    t.setText(String.format("%d", durations[index]));
@@ -197,6 +194,7 @@ public class Sound extends Application {
 		s.setMajorTickUnit(0.25f);
 		s.setBlockIncrement(0.1f);
 		t = new TextField(String.format("%.2f", s.getValue()));
+		l = new Label(names[index] + "\n(volume)");
 		s.valueProperty().addListener((ov, oldValue, newValue) -> {
 		    levels[index] = newValue.doubleValue();
 		    t.setText(String.format("%.2f", levels[index]));
@@ -212,7 +210,7 @@ public class Sound extends Application {
 	}
 
 	// Set Grid-lines-visible during debug
-	root.setGridLinesVisible(true);
+	// root.setGridLinesVisible(true);
 
 	// Signal that we need to layout the GridPane (ie. the Nodes are done)
 	root.needsLayoutProperty();
@@ -226,16 +224,18 @@ public class Sound extends Application {
      */
     private String updateTable() {
 	duration = 0;
-	String str = "------------------------\nACTIVE ENVELOPE SETTINGS\n------------------------";
-	for (int i = 0; i < 4; i++) {
-	    str += String.format("\n%-16s%8d", names[i * 2], durations[i + 1]);
-	    duration += durations[i + 1];
+	String str = "========================";
+	str += "\nACTIVE ENVELOPE SETTINGS";
+	str += "\n------------------------";
+	for (int i = 1; i < 5; i++) {
+	    str += String.format("\n%-16s%8d", names[i] + " (ms)", durations[i]);
+	    duration += durations[i];
 	}
 	str += "\n------------------------";
 	str += String.format("\n%-16s%8d", "TOTAL TIME (ms)", duration);
-	str += "\n========================";
-	for (int i = 0; i < 4; i++) {
-	    str += String.format("\n%-16s%8.2f", names[i * 2 + 1], levels[i + 1]);
+	str += "\n------------------------";
+	for (int i = 1; i < 5; i++) {
+	    str += String.format("\n%-16s%8.2f", names[i] + " (volume)", levels[i]);
 	}
 	str += "\n========================";
 	return str;
