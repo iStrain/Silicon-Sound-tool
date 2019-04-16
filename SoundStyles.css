@@ -41,6 +41,32 @@
 	-fx-background-radius: 30, 30;
 }
 
+#grid-pane-small {
+	-fx-alignment: center;
+	-fx-padding: 5px;
+	-fx-spacing: 5px;
+	-fx-border-style: solid inside line-join round, solid inside line-join round;
+	-fx-border-color: -fx-border-dark -fx-border-light -fx-border-light -fx-border-dark, -fx-border-dark;
+	-fx-border-width: 5, 1;
+	-fx-border-radius: 15, 15;
+	-fx-border-insets: 0, 4;
+	-fx-background-color: linear-gradient(to top left, -fx-background-light, -fx-background-dark);
+	-fx-background-insets: 5;
+}
+
+.HBox {
+	-fx-alignment: center;
+	-fx-padding: 5px;
+	-fx-spacing: 5px;
+	-fx-border-style: none;
+	-fx-border-color: transparent;
+	-fx-border-width: 5, 1;
+	-fx-border-radius: 15, 15;
+	-fx-border-insets: 0, 4;
+	-fx-background-color: transparent;
+	-fx-background-insets: 5;
+}
+
 #VBox-buttons {
 	-fx-alignment: center;
 	-fx-spacing: 1em;
@@ -70,7 +96,7 @@
  * Removes the "legend" element
  * Puts the "title" element at the top, in WHITE with fx-lightaqua strokes at a width of 1
  * Sets a BLACK background, WHITE gridlines and tickmarks, and -fx-lightaqua text more generally
- * Also creates a rounded border at a width of 5 
+ * Also creates a rounded border at a width of 5 with a defining 1-pixel line on the outside
  */
 .chart {
 	-fx-border-style: solid inside line-join round, solid inside line-join round;
@@ -129,6 +155,37 @@
         linear-gradient(-fx-lightaqua, BLACK);
 }
 .button:pressed {
+    -fx-background-insets: 0, 8, 9, 0, 11;
+}
+
+#button-round {
+	-fx-min-width: 52px;
+	-fx-max-width: 52px;
+	-fx-min-height: 52px;
+	-fx-max-height: 52px;
+    -fx-background-color: 
+        rgba(55, 135, 42, 0.5),
+        rgba(0, 0, 0, 0.05),
+        linear-gradient(to top left, BLACK, -fx-lightaqua),
+        linear-gradient(to top left, BLACK, -fx-lightaqua);
+    -fx-background-image: url("Stop.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+    -fx-background-insets: 0, 8, 9, 10, 11;
+    -fx-background-radius: 50;
+    -fx-padding: 15 30 15 30;
+    -fx-text-fill: WHITE;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.1), 2, 0.0, 0, 1);
+}
+#button-round:hover {
+    -fx-background-color: 
+        rgba(55, 135, 42, 0.5),
+        rgba(0, 0, 0, 0.05),
+        linear-gradient(to top left, BLACK, -fx-lightaqua),
+        linear-gradient(to top left, BLACK, -fx-lightaqua),
+        linear-gradient(to top left, -fx-lightaqua, BLACK);
+}
+#button-round:pressed {
     -fx-background-insets: 0, 8, 9, 0, 11;
 }
 
