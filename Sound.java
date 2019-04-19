@@ -15,6 +15,7 @@
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
@@ -54,7 +55,7 @@ public class Sound extends Application {
     int[] durations = { 0, 50, 50, 50, 50 }; // Initial durations of the 4 phases
     int[] positions = { 0, 50, 100, 150, 200 }; // Cumulative durations of the 4 phases
     double[] levels = { 0.0, 1.0, 0.75, 0.5, 0 }; // Volume levels for the 4 phases
-    Tune loaded = new Tune("Heroes.mp3");
+    Tune loaded = new Tune("resources/Silicon_Theme_Funk.mp3");
 
     /*
      * The usual "main" method - this code is only executed on platforms that lack
@@ -254,8 +255,24 @@ public class Sound extends Application {
 	// gp.setGridLinesVisible(true);
 
 	// Create the duration control Slider
-	loaded.mp.setOnReady(loaded);
-	
+	loaded.mp.setOnReady(() -> {
+	    Slider sTime = new Slider(loaded.mp.getStartTime().toMinutes(), loaded.mp.getStopTime().toMinutes(),
+		    loaded.mp.getCurrentTime().toMinutes());
+	    sTime.setId("TimeSlider");
+	    sTime.setTooltip(new Tooltip("Use this Slider to control playback duration"));
+	    InvalidationListener sliderChangeListener = o -> loaded.mp.seek(Duration.minutes(sTime.getValue()));
+	    sTime.valueProperty().addListener(sliderChangeListener);
+	    loaded.mp.startTimeProperty().addListener((ov, oldValue, newValue) -> sTime.setMin(newValue.toMinutes()));
+	    loaded.mp.stopTimeProperty().addListener((ov, oldValue, newValue) -> sTime.setMax(newValue.toMinutes()));
+	    loaded.mp.currentTimeProperty().addListener(l -> {
+		sTime.valueProperty().removeListener(sliderChangeListener);
+		sTime.setValue(loaded.mp.getCurrentTime().toMinutes());
+		sTime.valueProperty().addListener(sliderChangeListener);
+	    });
+	    gp.add(sTime, 0, 0, 4, 1);
+	    root.needsLayoutProperty();
+	});
+
 	// Create the volume control Slider
 	Slider sVol = new Slider(0.0, 1.0, loaded.mp.getVolume());
 	sVol.setId("VolSlider");

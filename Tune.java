@@ -14,8 +14,6 @@
 
 import java.io.File;
 
-import javafx.scene.control.Slider;
-import javafx.scene.control.Tooltip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -49,14 +47,5 @@ public class Tune implements Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
-	// Create the duration control Slider
-	Slider sTime = new Slider(mp.getStartTime().toMinutes(), mp.getStopTime().toMinutes(),
-		mp.getCurrentTime().toMinutes());
-	sTime.setId("TimeSlider");
-	sTime.setTooltip(new Tooltip("Use this Slider to control playback duration"));
-	mp.currentTimeProperty().addListener((ov, oldValue, newValue) -> {
-	    sTime.setValue(newValue.toMinutes());
-	});
-	Sound.gp.add(sTime, 0, 0, 4, 1);
     }
 }

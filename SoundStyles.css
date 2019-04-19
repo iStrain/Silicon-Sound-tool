@@ -30,8 +30,8 @@
 .grid-pane {
 	-fx-alignment: center;
 	-fx-padding: 1em;
-	-fx-hgap: 1em;
-	-fx-vgap: 1em;
+	-fx-hgap: 5px;
+	-fx-vgap: 5px;
 	-fx-border-style: solid inside line-join round;
 	-fx-border-color: -fx-border-light -fx-border-dark -fx-border-dark -fx-border-light;
 	-fx-border-width: 6;
@@ -82,6 +82,7 @@
 
 #VBox-variable {
 	-fx-alignment: center;
+	-fx-pref-height:17em;
 	-fx-padding: 5px;
 	-fx-spacing: 5px;
 	-fx-border-style: solid inside line-join round, solid inside line-join round;
@@ -214,6 +215,7 @@
 	-fx-tick-label-font-size: 12px;
 }
 .slider > .axis {
+	-fx-tick-label-font-size: 12px;
 	-fx-tick-label-fill: -fx-lightaqua;
 }
 .slider > .axis > .axis-tick-mark,
