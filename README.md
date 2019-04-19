@@ -17,3 +17,5 @@ Files are:
 + Sound.exe (Windows executable for the tool).
 
 The tool also uses the Tone.java, Envelope.java and Twain.java files from the Silicon repository (copies of the latest versions are provided here).
+
+To compile: Put the .java, .css and .mp3 files in the /src directory, the .css, .mp3 and .png files in a /bin directory, and the .css, .mp3 and .png files in the main project directory.  Compile Sound.java.
