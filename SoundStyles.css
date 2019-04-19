@@ -44,7 +44,8 @@
 #grid-pane-small {
 	-fx-alignment: center;
 	-fx-padding: 5px;
-	-fx-spacing: 5px;
+	-fx-hgap: 5px;
+	-fx-vgap: 5px;
 	-fx-border-style: solid inside line-join round, solid inside line-join round;
 	-fx-border-color: -fx-border-dark -fx-border-light -fx-border-light -fx-border-dark, -fx-border-dark;
 	-fx-border-width: 5, 1;
@@ -168,7 +169,6 @@
         rgba(0, 0, 0, 0.05),
         linear-gradient(to top left, BLACK, -fx-lightaqua),
         linear-gradient(to top left, BLACK, -fx-lightaqua);
-    -fx-background-image: url("Stop.png");
 	-fx-background-position: center;
 	-fx-background-repeat: no-repeat;
     -fx-background-insets: 0, 8, 9, 10, 11;
@@ -194,9 +194,24 @@
  */
 .slider {
 	-fx-orientation: vertical;
-	-fx-pref-height: 150px;
 	-fx-show-tick-labels: true;
 	-fx-show-tick-marks: true;
+}
+#VolSlider {
+	-fx-orientation: horizontal;
+	-fx-major-tick-unit: 0.25;
+	-fx-block-increment: 1;
+}
+#VolSlider > .axis:bottom {
+	-fx-tick-label-font-size: 12px;
+}
+#TimeSlider {
+	-fx-orientation: horizontal;
+	-fx-major-tick-unit: 1;
+	-fx-block-increment: 1;
+}
+#TimeSlider > .axis:bottom {
+	-fx-tick-label-font-size: 12px;
 }
 .slider > .axis {
 	-fx-tick-label-fill: -fx-lightaqua;

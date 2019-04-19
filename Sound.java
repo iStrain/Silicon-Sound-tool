@@ -15,6 +15,7 @@
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -45,6 +46,7 @@ import javafx.util.Duration;
 public class Sound extends Application {
     Stage stage; // Stage for JavaFX application
     public static GridPane root; // Root node for the application - a GridPane
+    public static GridPane gp; // Node for the mp3player - a GridPane
     Envelope env; // Global storage for the active Envelope
     int duration; // Total duration of the current settings
     Button btPlay; // Global storage for the "Play a tone" button
@@ -52,6 +54,7 @@ public class Sound extends Application {
     int[] durations = { 0, 50, 50, 50, 50 }; // Initial durations of the 4 phases
     int[] positions = { 0, 50, 100, 150, 200 }; // Cumulative durations of the 4 phases
     double[] levels = { 0.0, 1.0, 0.75, 0.5, 0 }; // Volume levels for the 4 phases
+    Tune loaded = new Tune("Heroes.mp3");
 
     /*
      * The usual "main" method - this code is only executed on platforms that lack
@@ -69,8 +72,8 @@ public class Sound extends Application {
      * @see javafx.application.Application#start(javafx.stage.Stage)
      */
     @Override
-    public void start(Stage stage) {
-	this.stage = stage;
+    public void start(Stage primaryStage) {
+	stage = primaryStage;
 	// Set the Style for the primary Stage
 	stage.initStyle(StageStyle.DECORATED);
 	// Set the title of the primary Stage
@@ -82,7 +85,6 @@ public class Sound extends Application {
 	// Add the Scene to the primary Stage and resize
 	stage.setScene(scene);
 	stage.show();
-	new Thread(new Tune("src/Heroes.mp3")).start();
 	btPlay.requestFocus();
     }
 
@@ -90,7 +92,6 @@ public class Sound extends Application {
      * createGridPane() method: creates GridPane and its contents.
      */
     private boolean createGridPane() {
-
 	// Create a GridPane to hold the MiNiSYNTH
 	root = new GridPane();
 	root.getStyleClass().add("grid-pane");
@@ -111,7 +112,8 @@ public class Sound extends Application {
 	vbWave.getChildren().add(lWave);
 	root.add(vbWave, 4, 0, 2, 1);
 
-	mp3Player();
+	//
+	createMP3player();
 
 	// Define the x and y NumberAxis
 	NumberAxis xAxis = new NumberAxis();
@@ -194,11 +196,11 @@ public class Sound extends Application {
 		s = new Slider(0.0, 1.0, levels[index]);
 		s.setMajorTickUnit(0.25f);
 		s.setBlockIncrement(0.1f);
-		t = new TextField(String.format("%.2f", s.getValue()));
+		t = new TextField();
+		t.textProperty().bind(Bindings.format("%.2f", s.valueProperty()));
 		l = new Label(names[index] + "\n(volume)");
 		s.valueProperty().addListener((ov, oldValue, newValue) -> {
 		    levels[index] = newValue.doubleValue();
-		    t.setText(String.format("%.2f", levels[index]));
 		    series.getData().set(index, new XYChart.Data<Integer, Double>(positions[index], levels[index]));
 		});
 	    }
@@ -243,50 +245,58 @@ public class Sound extends Application {
 	return str;
     }
 
-    private void mp3Player() {
-	// Load all the icons as separately-selectable ImageViews 
-	ImageView iconEject = new ImageView(new Image(getClass().getResourceAsStream("media-eject.png")));
-	ImageView iconBack = new ImageView(new Image(getClass().getResourceAsStream("sm_media_seek_backward.png")));
-	ImageView icon2Start = new ImageView(new Image(getClass().getResourceAsStream("sm_media_skip_backward.png")));
-	ImageView iconPlay = new ImageView(new Image(getClass().getResourceAsStream("sm_media_playback_start.png")));
-	ImageView iconStop = new ImageView(new Image(getClass().getResourceAsStream("sm_media_playback_stop.png")));
-	ImageView iconFwd = new ImageView(new Image(getClass().getResourceAsStream("sm_media_seek_forward.png")));
-	ImageView icon2End = new ImageView(new Image(getClass().getResourceAsStream("sm_media_skip_forward.png")));
+    private void createMP3player() {
+	// Create a GridPane to hold the mp3player
+	gp = new GridPane();
+	gp.setId("grid-pane-small");
 
-	// Define all the buttons - needed because they replace each other
-	Button btEject= new Button("", iconEject);
+	// Set Grid-lines-visible during debug
+	// gp.setGridLinesVisible(true);
+
+	// Create the duration control Slider
+	loaded.mp.setOnReady(loaded);
+	
+	// Create the volume control Slider
+	Slider sVol = new Slider(0.0, 1.0, loaded.mp.getVolume());
+	sVol.setId("VolSlider");
+	sVol.setTooltip(new Tooltip("Use this Slider to control playback volume"));
+	sVol.valueProperty().addListener((ov, oldValue, newValue) -> {
+	    loaded.mp.setVolume(newValue.doubleValue());
+	});
+	gp.add(sVol, 0, 2, 4, 1);
+
+	// Define all 7 x Buttons - this is needed up-front because they replace
+	// themselves with each other
+	Button btEject = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Eject.png"))));
 	btEject.setId("button-round");
 	btEject.setTooltip(new Tooltip("Press this button to select a new mp3"));
 
-	Button btBack = new Button("", iconBack);
+	Button btBack = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Backward.png"))));
 	btBack.setId("button-round");
 	btBack.setTooltip(new Tooltip("Press this button to skip backwards 30 seconds"));
 
-	Button bt2Start = new Button("", icon2Start);
+	Button bt2Start = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Back2Start.png"))));
 	bt2Start.setId("button-round");
 	bt2Start.setTooltip(new Tooltip("Press this button to restart the mp3"));
 
-	Button btStop = new Button("", iconStop);
-	btStop.setId("button-round");
-	btStop.setTooltip(new Tooltip("Press this button to stop playback"));
-
-	Button btPlay = new Button("", iconPlay);
+	Button btPlay = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Play.png"))));
 	btPlay.setId("button-round");
 	btPlay.setTooltip(new Tooltip("Press this button to start playback"));
 
-	Button btFwd = new Button("", iconFwd);
+	Button btStop = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Stop.png"))));
+	btStop.setId("button-round");
+	btStop.setTooltip(new Tooltip("Press this button to stop playback"));
+
+	Button btFwd = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Forward.png"))));
 	btFwd.setId("button-round");
 	btFwd.setTooltip(new Tooltip("Press this button to skip forwards 30 seconds"));
 
-	Button bt2End = new Button("", icon2End);
+	Button bt2End = new Button("", new ImageView(new Image(getClass().getResourceAsStream("Forward2End.png"))));
 	bt2End.setId("button-round");
 	bt2End.setTooltip(new Tooltip("Press this button to skip to the end of the mp3"));
-	
-	// Create a GridPane to hold the mp3player
-	GridPane gp = new GridPane();
-	gp.setId("grid-pane-small");
 
-	// Create 7 x Buttons
+	// Define actions for all 7 x Buttons
+	// Actions for "Eject" Button (at 0, 1)
 	btEject.setOnAction(ae -> {
 	    FileChooser fc = new FileChooser();
 	    fc.setTitle("Select a new mp3");
@@ -294,42 +304,53 @@ public class Sound extends Application {
 		    new ExtensionFilter("All Files", "*.*"));
 	    File f = fc.showOpenDialog(stage);
 	    if (f != null) {
-		Tune.mp.stop();
-		new Thread(new Tune(f)).start();
+		loaded.mp.stop();
+		loaded = new Tune(f);
 	    }
 	});
+
+	// Actions for "Seek Backwards" Button (at 1, 1)
 	btBack.setOnAction(ae -> {
-	    Tune.mp.seek(Tune.mp.getCurrentTime().subtract(Duration.seconds(30.0d)));
+	    loaded.mp.seek(loaded.mp.getCurrentTime().subtract(Duration.seconds(30.0d)));
 	    gp.getChildren().remove(btBack);
-	    gp.add(bt2Start,1,1);
-	});
-	bt2Start.setOnAction(ae -> {
-	    Tune.mp.seek(Tune.mp.getStartTime());
-	    gp.getChildren().remove(bt2Start);
-	    gp.add(btBack,1,1);
-	});
-	btStop.setOnAction(ae -> {
-	    Tune.mp.stop();
-	    gp.getChildren().remove(btStop);
-	    gp.add(btPlay,2,1);
-	});
-	btPlay.setOnAction(ae -> {
-	    Tune.mp.play();
-	    gp.getChildren().remove(btPlay);
-	    gp.add(btStop,2,1);
-	});
-	btFwd.setOnAction(ae -> {
-	    Tune.mp.seek(Tune.mp.getCurrentTime().add(Duration.seconds(30.0d)));
-	    gp.getChildren().remove(btFwd);
-	    gp.add(bt2End,3,1);
-	});
-	bt2End.setOnAction(ae -> {
-	    Tune.mp.seek(Tune.mp.getStopTime());
-	    gp.getChildren().remove(bt2End);
-	    gp.add(btFwd,3,1);
+	    gp.add(bt2Start, 1, 1);
 	});
 
-	gp.addRow(1, btEject, btBack, btStop, btFwd);
+	// Actions for "Seek to Start" Button (at 1, 1)
+	bt2Start.setOnAction(ae -> {
+	    loaded.mp.seek(loaded.mp.getStartTime());
+	    gp.getChildren().remove(bt2Start);
+	    gp.add(btBack, 1, 1);
+	});
+
+	// Actions for "Play" Button (at 2, 1)
+	btPlay.setOnAction(ae -> {
+	    loaded.mp.play();
+	    gp.getChildren().remove(btPlay);
+	    gp.add(btStop, 2, 1);
+	});
+
+	// Actions for "Stop" Button (at 2, 1)
+	btStop.setOnAction(ae -> {
+	    loaded.mp.stop();
+	    gp.getChildren().remove(btStop);
+	    gp.add(btPlay, 2, 1);
+	});
+
+	// Actions for "Seek Forwards" Button (at 3, 1)
+	btFwd.setOnAction(ae -> {
+	    loaded.mp.seek(loaded.mp.getCurrentTime().add(Duration.seconds(30.0d)));
+	    gp.getChildren().remove(btFwd);
+	    gp.add(bt2End, 3, 1);
+	});
+
+	// Actions for "Seek to End" Button (at 3, 1)
+	bt2End.setOnAction(ae -> {
+	    loaded.mp.seek(loaded.mp.getStopTime());
+	    gp.getChildren().remove(bt2End);
+	    gp.add(btFwd, 3, 1);
+	});
+	gp.addRow(1, btEject, btBack, btPlay, btFwd);
 	root.add(gp, 6, 0, 2, 1);
     }
 }
