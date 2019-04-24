@@ -15,6 +15,7 @@
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
@@ -51,10 +52,10 @@ public class Sound extends Application {
     Envelope env; // Global storage for the active Envelope
     int duration; // Total duration of the current settings
     Button btPlay; // Global storage for the "Play a tone" button
-    String[] names = { "Origin", "Attack", "Decay", "Sustain", "Release" }; // Names for the 4 phases
-    int[] durations = { 0, 50, 50, 50, 50 }; // Initial durations of the 4 phases
-    int[] positions = { 0, 50, 100, 150, 200 }; // Cumulative durations of the 4 phases
-    double[] levels = { 0.0, 1.0, 0.75, 0.5, 0 }; // Volume levels for the 4 phases
+    String[] names = { "Origin", "Attack", "Decay", "Sustain", "Release" }; // Names for the phases
+    int[] durations = { 0, 50, 50, 50, 50 }; // Initial durations of the phases
+    int[] positions = { 0, 50, 100, 150, 200 }; // Cumulative durations of the phases
+    double[] levels = { 0.0, 1.0, 0.75, 0.5, 0.0 }; // Volume levels for the phases
     Tune loaded = new Tune("resources/Silicon_Theme_Funk.mp3");
 
     /*
@@ -113,7 +114,12 @@ public class Sound extends Application {
 	vbWave.getChildren().add(lWave);
 	root.add(vbWave, 4, 0, 2, 1);
 
-	//
+	/*
+	 * Create the MP3player - the time slider is still a bit wonky, but the other
+	 * controls seem to work (for a particular definition of "work"). You can, for
+	 * example, select and play an mp3 file (or another file-type JavaFX supports -
+	 * e.g. wav).
+	 */
 	createMP3player();
 
 	// Define the x and y NumberAxis
@@ -156,7 +162,7 @@ public class Sound extends Application {
 
 	Button btExit = new Button("EXIT");
 	btExit.setTooltip(new Tooltip("Press this button when you've had enough"));
-	btExit.setOnAction(ae -> System.exit(0));
+	btExit.setOnAction(ae -> Platform.exit());
 
 	// Create a VBox to hold the 3 x Buttons
 	VBox vb = new VBox();

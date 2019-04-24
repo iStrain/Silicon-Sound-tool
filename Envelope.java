@@ -20,10 +20,10 @@
  */
 
 public class Envelope {
-    private Twain attack = new Twain(0, 0); // Duration and level for attack phase
-    private Twain decay = new Twain(0, 0); // Duration and level for decay phase
-    private Twain sustain = new Twain(0, 0); // Duration and level for sustain phase
-    private Twain release = new Twain(0, 0); // Duration and level for release phase
+    private Twain attack = new Twain(0, 0.0d); // Duration and level for attack phase
+    private Twain decay = new Twain(0, 0.0d); // Duration and level for decay phase
+    private Twain sustain = new Twain(0, 0.0d); // Duration and level for sustain phase
+    private Twain release = new Twain(0, 0.0d); // Duration and level for release phase
     public double[] envArray; // Array of samples (0.0 ... 1.0) for the Envelope
 
     // Constructor for Envelope Class - requires 4 Twains: one each for
@@ -51,8 +51,9 @@ public class Envelope {
 	createEnvArray();
     }
 
-    // Alternative constructor for Envelope Class - requires 2 arrays of 5 elements each:
-    // array[0] is ignored, then Attack[1], Decay[2], Sustain[3] and Release[4]
+    // Alternative constructor for Envelope Class - requires 2 arrays of 5 elements
+    // each: array[0] is the origin which is assumed to be (0, 0), then Attack[1],
+    // Decay[2], Sustain[3] and Release[4]
     public Envelope(int[] durations, double[] levels) {
 	attack.duration = durations[1];
 	attack.level = levels[1];
