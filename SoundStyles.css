@@ -201,6 +201,7 @@
 #VolSlider {
 	-fx-orientation: horizontal;
 	-fx-major-tick-unit: 0.25;
+	-fx-minor-tick-count: 5;
 	-fx-block-increment: 1;
 }
 #VolSlider > .axis:bottom {
@@ -209,6 +210,7 @@
 #TimeSlider {
 	-fx-orientation: horizontal;
 	-fx-major-tick-unit: 1;
+	-fx-minor-tick-count: 4;
 	-fx-block-increment: 1;
 }
 #TimeSlider > .axis:bottom {

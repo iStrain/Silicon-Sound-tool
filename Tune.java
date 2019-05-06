@@ -15,6 +15,7 @@
 import java.io.File;
 
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
@@ -26,15 +27,25 @@ public class Tune implements Runnable {
 
     public Tune(String filename) {
 	this.filename = filename;
-	m = new Media(new File(filename).toURI().toASCIIString());
-	mp = new MediaPlayer(m);
-	mv = new MediaView(mp);
+	try {
+//	    m = new Media(new File("resources/" + filename).toURI().toASCIIString());
+m = new Media(this.getClass().getResource(filename).toExternalForm());
+	    mp = new MediaPlayer(m);
+	    mv = new MediaView(mp);
+	} catch (MediaException me) {
+	    System.out.println("Tune Class (line 31): Cannot load '" + filename + "' - please check folders.");
+	}
     }
 
     public Tune(File file) {
-	m = new Media(file.toURI().toASCIIString());
-	mp = new MediaPlayer(m);
-	mv = new MediaView(mp);
+	try {
+	    filename = file.getName();
+	    m = new Media(file.toURI().toASCIIString());
+	    mp = new MediaPlayer(m);
+	    mv = new MediaView(mp);
+	} catch (MediaException me) {
+	    System.out.println("Tune Class (line 41): Cannot load '" + file.getName() + "' - please check folders.");
+	}
     }
 
     /*
