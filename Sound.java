@@ -1,13 +1,15 @@
 
 /*
+ * GRP-COSC2635 2D
+ * (a.k.a. ERROR 404: TEAM NAME NOT FOUND)
  * MiNiSYNTH - A JavaFX tool by:
  * - Clark Lavery (mentor)
  * - Evert Visser (s3727884)
  * - Duncan Baxter (s3737140)
  * - Kira Macarthur (s3742864)
  * - Dao Kun Nie (s3691571)
- * - Michael Power (s3162668)
  * - John Zealand-Doyle (s3319550)
+ * - ex-team member Michael Power (s3162668)
  * 
  * Duncan can answer queries in relation to this Class.
  */
@@ -171,7 +173,6 @@ public class Sound extends Application {
 	btPlay = new Button("PLAY TONE");
 	btPlay.setTooltip(new Tooltip("Press this button to play a Tone with the current settings"));
 	btPlay.setOnMousePressed(me -> new Thread(new Tone(262, duration)).start());
-	btPlay.setOnAction(ae -> System.out.println("Play"));
 
 	Button btExit = new Button("EXIT");
 	btExit.setTooltip(new Tooltip("Press this button when you've had enough"));
